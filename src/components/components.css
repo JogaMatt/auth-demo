@@ -372,12 +372,11 @@ a{
     height: 180px;
     border-radius: 10px;
     box-shadow: -3px 3px 3px #acaeae;
-    background-color: rgb(240, 240, 240);
-    color: #11191c;
+    background-color: #05aae1;
+    color: white;
     text-align: center;
     cursor: pointer;
-    margin-right: 30px;
-    margin-bottom: 30px;
+    margin: 15px 30px 15px 0
 }
 
 
@@ -386,5 +385,5 @@ a{
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #11191c;
+    color: white;
 }
