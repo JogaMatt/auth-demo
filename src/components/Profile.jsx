@@ -15,7 +15,7 @@ import {storage} from '../firebase';
 import {getDownloadURL, listAll, ref} from 'firebase/storage'
 
 const Profile = (props) => {
-  const {myUser} = props
+  const {myUser, deleteNotification} = props
   const {user} = useAuth0()
   const currentStudentID = myUser.sub.slice(myUser.sub.length - 10)
   const [currentUser, setCurrentUser] = useState('')
@@ -34,7 +34,7 @@ const Profile = (props) => {
   const assignmentsRef = ref(storage, "teacherAssignmentUploads/")
   const [downloadUrls, setDownloadUrls] = useState([])
 
-  const showNotification = () => {
+  const uploadNotification = () => {
     toast.success('File uploaded!', {
       duration: 4000
     })
@@ -126,15 +126,16 @@ const Profile = (props) => {
                     {
                       myClasses ?
                       myClasses.map((myClass, i) => {
-                        return <div className='create-button' onClick={createClass}>
-                          <SiGoogleclassroom size={50} style={{marginTop: 30, marginBottom: 15}}/>
-                          <div className='button-desc'>
-                            {myClass.className}
+                        return <Link to={`/classes/${myClass.classID}`} key={i}><div className='create-button'>
+                            <SiGoogleclassroom size={50} style={{marginTop: 30, marginBottom: 15}}/>
+                            <div className='button-desc'>
+                              {myClass.className}
+                            </div>
+                            <div className="button-desc">
+                              Class ID: {myClass.classID}
+                            </div>
                           </div>
-                          <div className="button-desc">
-                            Class ID: {myClass.classID}
-                          </div>
-                        </div>
+                        </Link>
                       })
                       : null
                     }
@@ -233,7 +234,7 @@ const Profile = (props) => {
       </div>
       {classForm && <NewClass allClasses={allClasses} createClass={createClass} currentUser={currentUser}/>}
       {joinClass && <JoinClass studentClasses={studentClasses} allStudentClasses={allStudentClasses} joinCurrentClass={joinCurrentClass} currentUser={currentUser}/>}
-      {assignmentsForm && <NewAssignment myAssignments={myAssignments} addMyAssignment={addMyAssignment} myClasses={myClasses} showNotification={showNotification} myUser={myUser} postAssignment={postAssignment}/>}
+      {assignmentsForm && <NewAssignment myAssignments={myAssignments} addMyAssignment={addMyAssignment} myClasses={myClasses} uploadNotification={uploadNotification} myUser={myUser} postAssignment={postAssignment}/>}
     </div>
     )
 }

@@ -7,6 +7,8 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Profile from './components/Profile';
 import Assignment from './components/Assignment';
+import Class from './components/Class';
+import toast from 'react-hot-toast'
 
 
 function App() {
@@ -15,6 +17,12 @@ function App() {
 
   const updateAppUser = (new_user) => {
     setCurrentUser(new_user)
+  }
+
+  const deleteNotification = () => {
+    toast.success('Assignment deleted!', {
+      duration: 4000
+    })
   }
 
   return (
@@ -27,8 +35,9 @@ function App() {
         {isAuthenticated &&
           <>
             <Route path='/' element={<HomePage updateAppUser={updateAppUser} user={user} currentUser={currentUser}/>}/>
-            <Route path='/profile' element={<Profile myUser={user}/>}/>
-            <Route path='/assignment/:assignment_id/:assignment_name' element={<Assignment myUser={user}/>}/>
+            <Route path='/profile' element={<Profile myUser={user} deleteNotification={deleteNotification}/>}/>
+            <Route path='/classes/:classID' element={<Class myUser={user}/>}/>
+            <Route path='/assignment/:assignment_id/:assignment_name' element={<Assignment deleteNotification={deleteNotification} myUser={user}/>}/>
           </>
         }
       </Routes>
