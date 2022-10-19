@@ -53,7 +53,11 @@ const JoinClass = (props) => {
                 <input className='form-inputs' name='classID' type="text" placeholder='Class ID' onChange={(e) => setClassCode(e.target.value)}/>
                 <button className='form-button'>JOIN CLASS</button>
             </form>
+            <div className="cancel" style={{marginTop: 15, cursor: 'pointer'}} onClick={joinCurrentClass}>
+              Close
+            </div>
         </div>
+        
     </div>
   )
 }

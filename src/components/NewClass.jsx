@@ -72,6 +72,9 @@ const NewClass = (props) => {
                 <input className='form-inputs' name='classID' type="text" value={`Class ID: ${newClass.classID}`} readOnly/>
                 <button className='form-button'>CREATE NEW CLASS</button>
             </form>
+            <div className="cancel" style={{marginTop: 15, cursor: 'pointer'}} onClick={createClass}>
+              Close
+            </div>
         </div>
     </div>
   )

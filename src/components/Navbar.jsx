@@ -9,6 +9,7 @@ import {IoHomeOutline} from 'react-icons/io5'
 import { useAuth0 } from '@auth0/auth0-react'
 import './components.css'
 import NewUser from './NewUser'
+import { Toaster } from 'react-hot-toast'
 
 const Navbar = (props) => {
   const {user, updateAppUser} = props
