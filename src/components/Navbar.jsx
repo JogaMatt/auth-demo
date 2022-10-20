@@ -55,7 +55,7 @@ const Navbar = (props) => {
                             <Link to='/'><li className='link-title'>Home<IoHomeOutline size={20} style={{marginLeft: 10}}/></li></Link>
                             <Link to='/classes'><li className='link-title'>Classes<SiGoogleclassroom size={20} style={{marginLeft: 10}}/></li></Link>
                             {
-                                currentUser.position === 'student' ?
+                                currentUser.position === 'Student' ?
                                 <Link to='/my-grades'><li className="link-title">Grades<MdOutlineGrade size={20} style={{marginLeft: 10}}/></li></Link>
                                 : null
                             }

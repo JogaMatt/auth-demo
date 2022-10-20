@@ -4,17 +4,31 @@ import { useParams, useNavigate } from 'react-router-dom'
 import {storage} from '../firebase';
 import {getDownloadURL, listAll, ref, deleteObject} from 'firebase/storage'
 import { SlNotebook } from 'react-icons/sl';
+import SubmitAssignment from './SubmitAssignment';
+import toast, {Toaster} from 'react-hot-toast'
 
 const Assignment = (props) => {
   const {assignment_id, assignment_name} = useParams()
   const {myUser, deleteNotification} = props
   const assignmentsRef = ref(storage, "teacherAssignmentUploads/")
+  const submittedAssignmentsRef = ref(storage, "submittedAssignments/")
   const [assignment, setAssignment] = useState('')
+  const [submitAssignment, showSubmitAssignment] = useState(false)
   const [downloadUrls, setDownloadUrls] = useState([])
+  const [submittedAssignments, setSubmittedAssignments] = useState([])
   const navigate = useNavigate()
+  const userID = myUser.sub.slice(myUser.sub.length - 10)
+  const backend = 'http://localhost:8000'
 
-  const deleteAPI = `http://localhost:8000/api/assignment/deleteAssignment/${assignment._id}`
-  const oneAssignmentAPI = `http://localhost:8000/api/assignment/getOneAssignment/${assignment_id}`
+  const deleteAPI = `${backend}/api/assignment/deleteAssignment/${assignment_id}`
+  const oneAssignmentAPI = `${backend}/api/assignment/getOneAssignment/${assignment_id}`
+
+  const uploadNotification = () => {
+    toast.success('File uploaded!', {
+      duration: 4000
+    })
+  }
+
 
   useEffect(() => {
     axios.get(oneAssignmentAPI)
@@ -27,7 +41,20 @@ const Assignment = (props) => {
           })
         })
       })
+    listAll(submittedAssignmentsRef).then((res) => {
+      res.items.forEach((item) => {
+        console.log(assignment_id + userID)
+        if(item._location.path_.includes(assignment_id + userID)){
+          setSubmittedAssignments((prev) => [...prev, item._location.path_])
+        }
+        console.log(submittedAssignments)
+      })
+    })
   }, [])
+
+  const toggleSubmitAssignment = () => {
+    showSubmitAssignment(!submitAssignment)
+  }
 
   const deleteAssignment = () => {
     const deleteRef = ref(storage, `teacherAssignmentUploads/${assignment.teacherID}${assignment.name}`)
@@ -48,6 +75,18 @@ const Assignment = (props) => {
 
   return (
     <div className='profile-page'>
+      <Toaster toastOptions={{
+        success: {
+          style: {
+            border: '3px solid #18d55a'
+          }
+        },
+        error: {
+          style: {
+            border: '3px solid red'
+          }
+        }
+      }}/>
         <div className="profile-content">
             <div className='profile-header'>
                 <h2 style={{textAlign: 'center'}}>Assignment</h2>
@@ -65,20 +104,31 @@ const Assignment = (props) => {
                     </div>
                     <div className="right-assignment-content">
                         <h4>{assignment.name}</h4>
-                        {
-                            downloadUrls ?
-                            <a href={downloadUrls.filter(downloadUrl => downloadUrl.includes(myUser.sub.slice(myUser.sub.length - 10) + assignment_name))} download={assignment.name}>Click here to Download</a>
-                            : null
-                        }
-                        <a href='' download={assignment.name}></a>
                     </div>
                 </div>
                 : null
             }
             <div className="bottom-assignment-content">
-                <button className='delete-button' onClick={deleteAssignment}>DELETE ASSIGNMENT</button>
+                {
+                  downloadUrls && assignment.teacherID !== userID ?
+                    <>
+                      <a className='download-button' href={downloadUrls.filter(downloadUrl => downloadUrl.includes((assignment.teacherID) + assignment_name))} download={assignment.name}>
+                        <button className="download-button">CLICK HERE TO DOWNLOAD</button>
+                      </a>
+                      {/* {
+                        submittedAssignments ?
+                        submittedAssignments.filter(assignment => assignment.includes(assignment_id + userID)) !== 1 ?
+                        <button className="download-button submit-button" onClick={toggleSubmitAssignment}>SUBMIT ASSIGNMENT</button>
+                        : <button className="submitted-button">ASSIGNMENT SUBMITTED</button> : null
+                      } */}
+                      
+                    </>
+                    
+                  : <button className='delete-button' onClick={deleteAssignment}>DELETE ASSIGNMENT</button>
+                }
             </div>
         </div>
+        {submitAssignment && <SubmitAssignment toggleSubmitAssignment={toggleSubmitAssignment} uploadNotification={uploadNotification} myUser={myUser} assignment_id={assignment_id}/>}
     </div>
   )
 }

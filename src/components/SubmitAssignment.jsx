@@ -9,19 +9,19 @@ import Form from 'react-bootstrap/Form'
 import toast, {Toaster} from 'react-hot-toast'
 
 
-const NewAssignment = (props) => {
-  const {postAssignment, myUser, uploadNotification, myClasses, myAssignments, addMyAssignment} = props
+const SubmitAssignment = (props) => {
+  const { myUser, toggleSubmitAssignment, assignment_id, uploadNotification} = props
   const [fileUpload, setFileUpload] = useState(null)
-  const [currentDate, setCurrentDate] = useState('')
   const [assignment, setMyAssignment] = useState({
     name: '',
-    classID: '',
-    dueDate: '',
-    teacherID: myUser.sub.slice(myUser.sub.length - 10),
-    submitted: []
+    assignmentID: assignment_id,
+    studentID: myUser.sub.slice(myUser.sub.length - 10),
   })
   const fileSizeLimit = 1000000
-  const postAssignmentAPI = 'http://localhost:8000/api/assignment/post'
+  const backend = 'http://localhost:8000'
+  const userID = myUser.sub.slice(myUser.sub.length - 10)
+
+  const submitAssignmentAPI = `${backend}/api/assignment/submit/${assignment_id}`
 
   const uploadFile = (e) => {
     e.preventDefault()
@@ -29,27 +29,15 @@ const NewAssignment = (props) => {
       toast.error('No file uploaded', {
         duration: 4000
       })
-    } else if(assignment.classID === ''){
-        toast.error('Please select a class', {
-            duration: 4000
-          })
-    } else if(assignment.dueDate === ''){
-      toast.error('Please confirm a due date', {
-        duration: 4000
-      })
-    } else if(assignment.dueDate < currentDate){
-      toast.error('Due date can not be a past date', {
-        duration: 4000
-      })
     } else {
-        toast.success('Uploading...', {
+        toast.success('Submitting...', {
             duration: 4000
         })
-        const fileRef = ref(storage, `teacherAssignmentUploads/${myUser.sub.slice(myUser.sub.length - 10) + fileUpload.name.replace(/\s/g, '_')}`);
+        const fileRef = ref(storage, `submittedAssignments/${assignment_id + userID + fileUpload.name.replace(/\s/g, '_')}`);
         uploadBytes(fileRef, fileUpload)
         .then(() => {
-            addAssignmentToDB(e)
-            postAssignment()
+            submitHomework(e)
+            toggleSubmitAssignment()
             uploadNotification()
         })
     }
@@ -70,42 +58,20 @@ const NewAssignment = (props) => {
     })
   }
 
-  const addAssignmentToDB = (e) => {
+  const submitHomework = (e) => {
     e.preventDefault()
-    axios.post(postAssignmentAPI, {
+    axios.put(submitAssignmentAPI, {
         name: assignment.name.substring(12).replace(/\s/g, '_'),
-        classID: assignment.classID,
-        teacherID: assignment.teacherID,
-        dueDate: assignment.dueDate,
-        submitted: assignment.submitted
+        studentID: assignment.studentID
     })
-        .then(res => {
-            addMyAssignment(res.data)
-        })
+        .then(res => console.log('Assignment Submitted'))
         .catch(err => console.log(err))
   }
 
-  useEffect(() => {
-    const currentDate = new Date()
-    setCurrentDate(currentDate.toISOString().split('T')[0])
-  }, [])
-
   return (
     <div className='new-user'>
-        <Toaster toastOptions={{
-        success: {
-          style: {
-            border: '3px solid #18d55a'
-          }
-        },
-        error: {
-          style: {
-            border: '3px solid red'
-          }
-        }
-        }}/>
         <div className="new-user-form">
-            <div className="welcome">Post Assignment</div>
+            <div className="welcome">Submit Assignment</div>
             <form className='form' onSubmit={uploadFile}>
                 <label className='file-advisor'>Need to upload multiple files? Zip all of your files together! <br/> (File size limit: 100MB)</label>
                 {
@@ -119,7 +85,7 @@ const NewAssignment = (props) => {
                     </label>
                 }
                 <input id='file-upload' className='file-upload' type="file" name='name' onChange={changeFileName}/>
-                <select className='class-selector' name="classID" onChange={changeHandler}>
+                {/* <select className='class-selector' name="classID" onChange={changeHandler}>
                     <option value="">--Select a Class--</option>
                     {
                         myClasses ?
@@ -130,14 +96,14 @@ const NewAssignment = (props) => {
                     }
                 </select>
                 <label className='due-date'>Due Date:</label>
-                <input type="date" name="dueDate" className='class-selector' onChange={changeHandler} />
+                <input type="date" name="dueDate" className='class-selector' onChange={changeHandler} /> */}
                 {
                     fileUpload && (fileUpload.size/fileSizeLimit) > 1000 ?
                     <div className="too-large">FILE EXCEEDS SIZE LIMIT (100MB) </div>
-                    : <button className='form-button'>POST ASSIGNMENT</button>
+                    : <button className='form-button'>SUBMIT ASSIGNMENT</button>
                 }
             </form>
-            <div className="cancel" style={{marginTop: 15, cursor: 'pointer'}} onClick={postAssignment}>
+            <div className="cancel" style={{marginTop: 15, cursor: 'pointer'}} onClick={toggleSubmitAssignment}>
               Close
             </div>
         </div>
@@ -145,4 +111,4 @@ const NewAssignment = (props) => {
   )
 }
 
-export default NewAssignment
+export default SubmitAssignment

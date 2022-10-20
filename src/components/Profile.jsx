@@ -21,6 +21,7 @@ const Profile = (props) => {
   const [currentUser, setCurrentUser] = useState('')
   const [myClasses, setMyClasses] = useState([])
   const [studentClasses, setStudentClasses] = useState([])
+  const [studentAssignments, setStudentAssignments] = useState([])
   const [myAssignments, setMyAssignments] = useState([])
   const [classForm, showClassForm] = useState(false)
   const [joinClass, showJoinClass] = useState(false)
@@ -75,7 +76,10 @@ const Profile = (props) => {
       .then(res => setStudentClasses(res.data.filter(classroom => classroom.students.some(s => s.studentID === currentStudentID))))
       .catch(err => console.log(err))
     axios.get(allAssignmentsAPI)
-      .then(res => setMyAssignments(res.data.filter(potentialAssignment => potentialAssignment.teacherID === myUser.sub.slice(myUser.sub.length - 10))))
+      .then(res => {
+        setMyAssignments(res.data.filter(potentialAssignment => potentialAssignment.teacherID === myUser.sub.slice(myUser.sub.length - 10)))
+        setStudentAssignments(res.data)
+      })
       .catch(err => console.log(err))
     // listAll(assignmentsRef).then((res) => {
     //   res.items.forEach((item) => {
@@ -177,7 +181,7 @@ const Profile = (props) => {
               <div className="sub-contents">
                 
                   
-                    <div className='create-button'>
+                    <div className='create-button new-button'>
                       <MdOutlineGrade size={50} style={{marginTop: 30, marginBottom: 15}}/>
                       <div className='button-desc'>
                         My Grades 
@@ -220,12 +224,29 @@ const Profile = (props) => {
                   }
                 </>
                 // -----STUDENT-----
-                : <div className='create-button'>
+                : 
+                <>
+                  <div className='create-button new-button'>
                     <SlNotebook size={50} style={{marginTop: 30, marginBottom: 15}}/>
                     <div className='button-desc'>
                       My Assignments
                     </div>
                   </div>
+                  {
+                    studentAssignments ?
+                    studentAssignments.filter(potentialAssignment => studentClasses.some(s => s.classID === potentialAssignment.classID)).map((assignment, i) => {
+                      return <Link to={`/assignment/${assignment._id}/${assignment.name}`} key={i}>
+                        <div className='create-button'>
+                          <SlNotebook size={50} style={{marginTop: 30, marginBottom: 15}}/>
+                          <div className='button-desc'>
+                            {assignment.name}
+                          </div>
+                        </div>
+                      </Link>
+                    })
+                    : null
+                  }
+                </>
                 : null
               }
             </div>

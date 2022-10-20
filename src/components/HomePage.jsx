@@ -44,7 +44,6 @@ const HomePage = (props) => {
         </div>
         <div className="site-buttons">
           <ul className='site-cards'>
-            <Link to='/classes'>
               <li className='card'>
                 <SiGoogleclassroom size={50} style={{marginBottom: 15}}/>
                 <div className="card-title" style={{marginBottom: 15}}>Classes</div>
@@ -52,8 +51,6 @@ const HomePage = (props) => {
                   Teachers can make classes for students to join. Students can view all of their classes.
                 </div>
               </li>
-            </Link>
-            <Link to='/my-grades'>
               <li className='card'>
                 <MdOutlineGrade size={50} style={{marginBottom: 15}}/>
                 <div className="card-title" style={{marginBottom: 15}}>Grades</div>
@@ -61,8 +58,6 @@ const HomePage = (props) => {
                   Check your grades at one central location. Teachers, let's make it easy for you!
                 </div>
               </li>
-            </Link>
-            <Link to='/my-assignments'>
               <li className='card'>
                 <SlNotebook size={50} style={{marginBottom: 15}}/>
                 <div className="card-title" style={{marginBottom: 15}}>Assignments</div>
@@ -70,7 +65,6 @@ const HomePage = (props) => {
                   Upload and download all of your assignments! Missed school or lost your paper? We've got you covered!
                 </div>
               </li>
-            </Link>
           </ul>
         </div>
       </div>

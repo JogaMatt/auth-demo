@@ -412,7 +412,7 @@ input[type="file"]{
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 30px;
     padding: 5px 10px;
     background-color: rgb(230, 230, 230);
     border-radius: 5px;
@@ -513,17 +513,22 @@ input[type="file"]{
     margin: auto;
 }
 
-.delete-button{
+.delete-button, .download-button{
     width: inherit;
     height: 40px;
     box-shadow: 0px 2px 2px 1px #b6bdc0;
     border: none;
     border-radius: 5px;
     color: white;
-    font-size: 14pt;
-    font-weight: 500;
+    font-size: 13pt;
+    font-weight: 600;
     cursor: pointer;
     background-image: linear-gradient(to bottom right, rgb(251, 96, 96), red, rgb(251, 96, 96));
+}
+
+.download-button{
+    background-image: linear-gradient(to bottom right, #a8fabb, #28d928, #a8fabb);
+    margin-bottom: 30px;
 }
 
 .all-clear {
@@ -531,4 +536,20 @@ input[type="file"]{
     width: 150px;
     height: 180px;
     background-color: #11191c;
+}
+
+.submit-button{
+    background-image: linear-gradient(to bottom right, #82e0ff, #05aae1, #82e0ff);
+}
+
+.submitted-button{
+    width: inherit;
+    height: 40px;
+    box-shadow: 0px 2px 2px 1px #b6bdc0;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 13pt;
+    font-weight: 600;
+    background-color: #616c70;
 }
