@@ -495,9 +495,14 @@ input[type="file"]{
     min-width: 450px;
     margin: auto;
     margin-bottom: 30px;
-    display: flex;
+    /* display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: center; */
+}
+
+.left-assignment-content{
+    width: 12.5vw;
+    margin: auto;
 }
 
 .assignment-button{
@@ -508,9 +513,24 @@ input[type="file"]{
     cursor: default;
 }
 
+.assignment-description{
+    width: 507px;
+    height: 150px;
+    resize: none;
+    box-shadow: 0px 2px 2px 1px #b6bdc0;
+    border-radius: 5px;
+    border: 1px solid rgb(151, 151, 151);
+    margin-bottom: 30px;
+    padding: 10px 5px;
+    font-size: 12pt;
+    color: rgb(151, 151, 151);
+    font-weight: 600;
+}
+
 .bottom-assignment-content{
     width: 30vw;
     margin: auto;
+    margin-bottom: 60px;
 }
 
 .delete-button, .download-button{
@@ -524,6 +544,7 @@ input[type="file"]{
     font-weight: 600;
     cursor: pointer;
     background-image: linear-gradient(to bottom right, rgb(251, 96, 96), red, rgb(251, 96, 96));
+    
 }
 
 .download-button{

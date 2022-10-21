@@ -244,7 +244,7 @@ const Profile = (props) => {
                           </div>
                           {
                             submittedAssignments ?
-                            submittedAssignments.includes(`submittedAssignments/${assignment._id + userID + assignment.classID + assignment.name}`) ? <div className="button-desc">*COMPLETE*</div> : null : null
+                            submittedAssignments.includes(`submittedAssignments/${assignment._id + userID + assignment.classID + assignment.name}`) ? <div className="button-desc">*COMPLETE*</div> : console.log(submittedAssignments) : null
                           }
                         </div>
                       </Link>

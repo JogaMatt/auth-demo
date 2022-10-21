@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom'
 
 
 const SubmitAssignment = (props) => {
-  const { myUser, toggleSubmitAssignment, assignment_id, uploadNotification, classID, dueDate} = props
+  const { assignment_name, myUser, toggleSubmitAssignment, assignment_id, uploadNotification, classID, dueDate} = props
   const [fileUpload, setFileUpload] = useState(null)
   const [dbUser, setDbUser] = useState('')
   const [assignment, setMyAssignment] = useState({
@@ -33,6 +33,10 @@ const SubmitAssignment = (props) => {
     e.preventDefault()
     if(fileUpload === null || fileUpload === undefined){
       toast.error('No file uploaded', {
+        duration: 4000
+      })
+    } else if(fileUpload.name !== assignment_name){
+      toast.error('File name must match assignment name', {
         duration: 4000
       })
     } else {
@@ -103,18 +107,7 @@ const SubmitAssignment = (props) => {
                     </label>
                 }
                 <input id='file-upload' className='file-upload' type="file" name='name' onChange={changeFileName}/>
-                {/* <select className='class-selector' name="classID" onChange={changeHandler}>
-                    <option value="">--Select a Class--</option>
-                    {
-                        myClasses ?
-                        myClasses.map((myClass, i) => {
-                            return <option key={i} value={myClass.classID}>{myClass.className}</option>
-                        })
-                        : null
-                    }
-                </select>
-                <label className='due-date'>Due Date:</label>
-                <input type="date" name="dueDate" className='class-selector' onChange={changeHandler} /> */}
+                
                 {
                     fileUpload && (fileUpload.size/fileSizeLimit) > 1000 ?
                     <div className="too-large">FILE EXCEEDS SIZE LIMIT (100MB) </div>

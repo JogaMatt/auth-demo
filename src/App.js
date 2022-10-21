@@ -25,6 +25,12 @@ function App() {
     })
   }
 
+  const disclaimerNotification = () => {
+    toast.success('If assignment is still visible in your assignment list, please refresh your page', {
+      duration: 8000
+    })
+  }
+
   return (
     <BrowserRouter>
       {isAuthenticated && <Navbar updateAppUser={updateAppUser} user={user}/>}
@@ -37,7 +43,7 @@ function App() {
             <Route path='/' element={<HomePage updateAppUser={updateAppUser} user={user} currentUser={currentUser}/>}/>
             <Route path='/profile' element={<Profile myUser={user} deleteNotification={deleteNotification}/>}/>
             <Route path='/classes/:classID' element={<Class myUser={user}/>}/>
-            <Route path='/assignment/:assignment_classID/:assignment_id/:assignment_name' element={<Assignment deleteNotification={deleteNotification} myUser={user}/>}/>
+            <Route path='/assignment/:assignment_classID/:assignment_id/:assignment_name' element={<Assignment disclaimerNotification={disclaimerNotification} deleteNotification={deleteNotification} myUser={user}/>}/>
           </>
         }
       </Routes>

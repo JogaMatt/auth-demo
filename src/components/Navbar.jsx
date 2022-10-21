@@ -53,13 +53,13 @@ const Navbar = (props) => {
                     <div className="links">
                         <ul className='link-list'>
                             <Link to='/'><li className='link-title'>Home<IoHomeOutline size={20} style={{marginLeft: 10}}/></li></Link>
-                            <Link to='/classes'><li className='link-title'>Classes<SiGoogleclassroom size={20} style={{marginLeft: 10}}/></li></Link>
+                            {/* <Link to='/classes'><li className='link-title'>Classes<SiGoogleclassroom size={20} style={{marginLeft: 10}}/></li></Link>
                             {
                                 currentUser.position === 'Student' ?
                                 <Link to='/my-grades'><li className="link-title">Grades<MdOutlineGrade size={20} style={{marginLeft: 10}}/></li></Link>
                                 : null
                             }
-                            <Link to='/my-assignments'><li className="link-title">Assignments<SlNotebook size={20} style={{marginLeft: 10}}/></li></Link>
+                            <Link to='/my-assignments'><li className="link-title">Assignments<SlNotebook size={20} style={{marginLeft: 10}}/></li></Link> */}
                             <li className="link-title" style={{cursor: 'pointer'}} onClick={logout}>Log Out<FiLogOut size={20} style={{marginLeft: 10}}/></li>
                         </ul>
                     </div>

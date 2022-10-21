@@ -18,7 +18,8 @@ const NewAssignment = (props) => {
     classID: '',
     dueDate: '',
     teacherID: myUser.sub.slice(myUser.sub.length - 10),
-    submitted: []
+    submitted: [],
+    description: ''
   })
   const fileSizeLimit = 1000000
   const postAssignmentAPI = 'http://localhost:8000/api/assignment/post'
@@ -39,6 +40,10 @@ const NewAssignment = (props) => {
       })
     } else if(assignment.dueDate < currentDate){
       toast.error('Due date can not be a past date', {
+        duration: 4000
+      })
+    } else if(assignment.description.length < 1){
+      toast.error('Please enter an assignment description', {
         duration: 4000
       })
     } else {
@@ -77,7 +82,8 @@ const NewAssignment = (props) => {
         classID: assignment.classID,
         teacherID: assignment.teacherID,
         dueDate: assignment.dueDate,
-        submitted: assignment.submitted
+        submitted: assignment.submitted,
+        description: assignment.description
     })
         .then(res => {
             addMyAssignment(res.data)
@@ -131,6 +137,8 @@ const NewAssignment = (props) => {
                 </select>
                 <label className='due-date'>Due Date:</label>
                 <input type="date" name="dueDate" className='class-selector' onChange={changeHandler} />
+                <label className='due-date'>Assignment Description:</label>
+                <textarea style={{width: 502, margin: '15px auto 30px'}} name="description" className='assignment-description' onChange={changeHandler}/>
                 {
                     fileUpload && (fileUpload.size/fileSizeLimit) > 1000 ?
                     <div className="too-large">FILE EXCEEDS SIZE LIMIT (100MB) </div>
