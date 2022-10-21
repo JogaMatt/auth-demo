@@ -31,6 +31,7 @@ const Assignment = (props) => {
 
 
   useEffect(() => {
+    console.log("Hello")
     axios.get(oneAssignmentAPI)
         .then(res => setAssignment(res.data[0]))
         .catch(err => console.log(err))
