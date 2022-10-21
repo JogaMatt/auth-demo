@@ -5,7 +5,7 @@ import { useAuth0 } from '@auth0/auth0-react'
 const LandingPage = () => {
   const {loginWithPopup, isLoading} = useAuth0()
   if(isLoading){
-    return <div></div>
+    return <div className='loading-screen'></div>
   }
   return (
     <div className='landing-page'>

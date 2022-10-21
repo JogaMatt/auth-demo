@@ -8,7 +8,6 @@ const NewClass = (props) => {
   const [genCode, setGenCode] = useState('')
   const [newClass, setNewClass] = useState({
     teacher: `${currentUser.userID.slice(currentUser.userID.length - 10)}`,
-    students: '',
     subject: '',
     className: '',
     classID: '',

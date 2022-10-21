@@ -7,21 +7,27 @@ import {v4} from 'uuid'
 import './components.css'
 import Form from 'react-bootstrap/Form'
 import toast, {Toaster} from 'react-hot-toast'
+import { useNavigate } from 'react-router-dom'
 
 
 const SubmitAssignment = (props) => {
-  const { myUser, toggleSubmitAssignment, assignment_id, uploadNotification} = props
+  const { myUser, toggleSubmitAssignment, assignment_id, uploadNotification, classID, dueDate} = props
   const [fileUpload, setFileUpload] = useState(null)
+  const [dbUser, setDbUser] = useState('')
   const [assignment, setMyAssignment] = useState({
     name: '',
     assignmentID: assignment_id,
     studentID: myUser.sub.slice(myUser.sub.length - 10),
+    dateSubmitted: '',
+    dueDate: dueDate
   })
   const fileSizeLimit = 1000000
   const backend = 'http://localhost:8000'
   const userID = myUser.sub.slice(myUser.sub.length - 10)
+  const navigate = useNavigate()
 
   const submitAssignmentAPI = `${backend}/api/assignment/submit/${assignment_id}`
+  const currentUserAPI = `${backend}/api/user/oneUser/${myUser.sub}`
 
   const uploadFile = (e) => {
     e.preventDefault()
@@ -33,7 +39,7 @@ const SubmitAssignment = (props) => {
         toast.success('Submitting...', {
             duration: 4000
         })
-        const fileRef = ref(storage, `submittedAssignments/${assignment_id + userID + fileUpload.name.replace(/\s/g, '_')}`);
+        const fileRef = ref(storage, `submittedAssignments/${assignment_id + userID + classID + fileUpload.name.replace(/\s/g, '_')}`);
         uploadBytes(fileRef, fileUpload)
         .then(() => {
             submitHomework(e)
@@ -60,13 +66,25 @@ const SubmitAssignment = (props) => {
 
   const submitHomework = (e) => {
     e.preventDefault()
+    const fullName = dbUser[0].firstName + ' ' + dbUser[0].lastName
+    const newDate = new Date()
     axios.put(submitAssignmentAPI, {
         name: assignment.name.substring(12).replace(/\s/g, '_'),
-        studentID: assignment.studentID
+        assignmentID: assignment.assignmentID,
+        studentID: assignment.studentID,
+        studentName: fullName,
+        dateSubmitted: newDate.toISOString().split('T')[0],
+        dueDate: assignment.dueDate 
     })
-        .then(res => console.log('Assignment Submitted'))
+        .then(res => navigate('/profile'))
         .catch(err => console.log(err))
   }
+
+  useEffect(() => {
+    axios.get(currentUserAPI)
+      .then(res => setDbUser(res.data))
+      .catch(err => console.log(err))
+  }, [])
 
   return (
     <div className='new-user'>

@@ -8,7 +8,7 @@ import SubmitAssignment from './SubmitAssignment';
 import toast, {Toaster} from 'react-hot-toast'
 
 const Assignment = (props) => {
-  const {assignment_id, assignment_name} = useParams()
+  const {assignment_classID, assignment_id, assignment_name} = useParams()
   const {myUser, deleteNotification} = props
   const assignmentsRef = ref(storage, "teacherAssignmentUploads/")
   const submittedAssignmentsRef = ref(storage, "submittedAssignments/")
@@ -43,11 +43,9 @@ const Assignment = (props) => {
       })
     listAll(submittedAssignmentsRef).then((res) => {
       res.items.forEach((item) => {
-        console.log(assignment_id + userID)
-        if(item._location.path_.includes(assignment_id + userID)){
+        if(item._location.path_ === `submittedAssignments/${assignment_id + userID + assignment_classID + assignment_name}`){
           setSubmittedAssignments((prev) => [...prev, item._location.path_])
         }
-        console.log(submittedAssignments)
       })
     })
   }, [])
@@ -115,20 +113,17 @@ const Assignment = (props) => {
                       <a className='download-button' href={downloadUrls.filter(downloadUrl => downloadUrl.includes((assignment.teacherID) + assignment_name))} download={assignment.name}>
                         <button className="download-button">CLICK HERE TO DOWNLOAD</button>
                       </a>
-                      {/* {
-                        submittedAssignments ?
-                        submittedAssignments.filter(assignment => assignment.includes(assignment_id + userID)) !== 1 ?
+                      {
+                        submittedAssignments.length === 0 ?
                         <button className="download-button submit-button" onClick={toggleSubmitAssignment}>SUBMIT ASSIGNMENT</button>
-                        : <button className="submitted-button">ASSIGNMENT SUBMITTED</button> : null
-                      } */}
-                      
+                        : <button className="submitted-button">UPDATE SUBMITTED ASSIGNMENT</button>
+                      }
                     </>
-                    
                   : <button className='delete-button' onClick={deleteAssignment}>DELETE ASSIGNMENT</button>
                 }
             </div>
         </div>
-        {submitAssignment && <SubmitAssignment toggleSubmitAssignment={toggleSubmitAssignment} uploadNotification={uploadNotification} myUser={myUser} assignment_id={assignment_id}/>}
+        {submitAssignment && <SubmitAssignment toggleSubmitAssignment={toggleSubmitAssignment} uploadNotification={uploadNotification} myUser={myUser} assignment_id={assignment_id} classID={assignment.classID} dueDate={assignment.dueDate}/>}
     </div>
   )
 }

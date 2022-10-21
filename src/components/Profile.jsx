@@ -23,6 +23,7 @@ const Profile = (props) => {
   const [studentClasses, setStudentClasses] = useState([])
   const [studentAssignments, setStudentAssignments] = useState([])
   const [myAssignments, setMyAssignments] = useState([])
+  const [submittedAssignments, setSubmittedAssignments] = useState([])
   const [classForm, showClassForm] = useState(false)
   const [joinClass, showJoinClass] = useState(false)
   const [gradesForm, showGradesForm] = useState(false)
@@ -33,7 +34,9 @@ const Profile = (props) => {
   const allClassesAPI = 'http://localhost:8000/api/class/allClasses/'
   const allAssignmentsAPI = 'http://localhost:8000/api/assignment/getAssignments'
   const assignmentsRef = ref(storage, "teacherAssignmentUploads/")
+  const submittedAssignmentsRef = ref(storage, "submittedAssignments/")
   const [downloadUrls, setDownloadUrls] = useState([])
+  const userID = myUser.sub.slice(myUser.sub.length - 10)
 
   const uploadNotification = () => {
     toast.success('File uploaded!', {
@@ -77,17 +80,15 @@ const Profile = (props) => {
       .catch(err => console.log(err))
     axios.get(allAssignmentsAPI)
       .then(res => {
-        setMyAssignments(res.data.filter(potentialAssignment => potentialAssignment.teacherID === myUser.sub.slice(myUser.sub.length - 10)))
+        setMyAssignments(res.data.filter(potentialAssignment => potentialAssignment.teacherID === userID))
         setStudentAssignments(res.data)
       })
       .catch(err => console.log(err))
-    // listAll(assignmentsRef).then((res) => {
-    //   res.items.forEach((item) => {
-    //     getDownloadURL(item).then((url) => {
-    //       setDownloadUrls((prev) => [...prev, url])
-    //     })
-    //   })
-    // })
+      listAll(submittedAssignmentsRef).then((res) => {
+        res.items.forEach((item) => {
+            setSubmittedAssignments((prev) => [...prev, item._location.path_])
+        })
+      })
   }, [])
 
   return (
@@ -155,7 +156,7 @@ const Profile = (props) => {
                 {
                   studentClasses ?
                   studentClasses.map((myClass, i) => {
-                    return <Link to={`/classes/${myClass.classID}`}><div key={i} className='create-button' onClick={createClass}>
+                    return <Link key={i} to={`/classes/${myClass.classID}`}><div className='create-button' onClick={createClass}>
                         <SiGoogleclassroom size={50} style={{marginTop: 30, marginBottom: 15}}/>
                         <div className='button-desc'>
                           {myClass.className}
@@ -211,7 +212,7 @@ const Profile = (props) => {
                   {
                     myAssignments ?
                     myAssignments.map((assignment, i) => {
-                      return <Link to={`/assignment/${assignment._id}/${assignment.name}`} key={i}>
+                      return <Link to={`/assignment/${assignment.classID}/${assignment._id}/${assignment.name}`} key={i}>
                         <div className='create-button'>
                           <SlNotebook size={50} style={{marginTop: 30, marginBottom: 15}}/>
                           <div className='button-desc'>
@@ -235,12 +236,16 @@ const Profile = (props) => {
                   {
                     studentAssignments ?
                     studentAssignments.filter(potentialAssignment => studentClasses.some(s => s.classID === potentialAssignment.classID)).map((assignment, i) => {
-                      return <Link to={`/assignment/${assignment._id}/${assignment.name}`} key={i}>
+                      return <Link to={`/assignment/${assignment.classID}/${assignment._id}/${assignment.name}`} key={i}>
                         <div className='create-button'>
                           <SlNotebook size={50} style={{marginTop: 30, marginBottom: 15}}/>
                           <div className='button-desc'>
                             {assignment.name}
                           </div>
+                          {
+                            submittedAssignments ?
+                            submittedAssignments.includes(`submittedAssignments/${assignment._id + userID + assignment.classID + assignment.name}`) ? <div className="button-desc">*COMPLETE*</div> : null : null
+                          }
                         </div>
                       </Link>
                     })

@@ -20,6 +20,10 @@
     background-image: linear-gradient(to bottom left, #616c70, #11191c);
 }
 
+.loading-screen{
+    background-image: linear-gradient(to bottom left, #616c70, #11191c);
+}
+
 .header{
     font-size: 35px;
     margin-bottom: 15px;
@@ -504,10 +508,6 @@ input[type="file"]{
     cursor: default;
 }
 
-.right-assignment-content{
-
-}
-
 .bottom-assignment-content{
     width: 30vw;
     margin: auto;
@@ -552,4 +552,31 @@ input[type="file"]{
     font-size: 13pt;
     font-weight: 600;
     background-color: #616c70;
+}
+
+.assignment-table{
+    width: 100%;
+}
+
+.assignment-tab-title{
+    background-color: white;
+    height: 40px;
+}
+
+.assignment-download-button{
+    width: 70px;
+}
+
+.assignment-table-title-row{
+    height: 40px;
+    background-color: white;
+}
+
+.assignment-table-title-row > td{
+    text-align: center;
+    font-weight: 500;
+}
+
+.assignment-table-head{
+    border: 1px solid black;
 }

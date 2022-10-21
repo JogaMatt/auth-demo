@@ -17,7 +17,6 @@ const JoinClass = (props) => {
   const myClasses = studentClasses.map(classroom => classroom.classID)
 
   useEffect(() => {
-    console.log(myClasses)
     axios.get(allClassesAPI)
       .then(res => setPotentialClasses(res.data.map(newClassCode => newClassCode.classID)))
       .catch(err => console.log(err))
