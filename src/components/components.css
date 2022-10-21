@@ -565,6 +565,12 @@ input[type="file"]{
 
 .assignment-download-button{
     width: 70px;
+    background-color: rgb(240, 240, 240);
+    border: none;
+    padding: 5px;
+    border-radius: 5px;
+    box-shadow: -3px 3px 3px #acaeae;
+    cursor: pointer
 }
 
 .assignment-table-title-row{
