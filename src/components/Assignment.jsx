@@ -25,10 +25,16 @@ const Assignment = (props) => {
   const submittedAssignmentsFromDB = `${backend}/api/assignment/getAssignmentsForOneClass/${assignment_classID}`
   const [studentDownloadUrls, setStudentDownloadUrls] = useState([])
   const [showGrading, setShowGrading] = useState(false)
+  const [forwardAssignment, setForwardAssignment] = useState('')
+  const [gradedAssignments, setGradedAssignments] = useState([])
+  const gradedAssignmentsRef = ref(storage, 'gradedAssignments/')
+  const [gradedFromFB, setGradedFromFB] = useState([])
 
   const currentUserAPI = `${backend}/api/user/oneUser/${myUser.sub}`
   const deleteAPI = `${backend}/api/assignment/deleteAssignment/${assignment_id}`
   const oneAssignmentAPI = `${backend}/api/assignment/getOneAssignment/${assignment_id}`
+  const gradedAssignmentsAPI = `${backend}/api/grade/allGrades`
+  const removeAllGradesForAssignmentAPI = `${backend}/api/grade/deleteAllAssignmentsGrades/${assignment_id}`
 
   const uploadNotification = () => {
     toast.success('File uploaded!', {
@@ -36,10 +42,32 @@ const Assignment = (props) => {
     })
   }
 
+  const gradeNotification = (studentName) => {
+    toast.success(`${studentName}'s grade has been submitted!`, {
+      duration: 4000
+    })
+  }
+
+  const removeGradedNotification = (studentName) => {
+    toast.success(`${studentName}'s grade has been removed! Time to grade it again!`, {
+      duration: 6000
+    })
+  }
+
+  const addToGraded = (graded) => {
+    setGradedAssignments([...gradedAssignments, graded])
+  }
+
+  const freshGradedAssignments = (arr) => {
+    setGradedAssignments(arr)
+  }
 
   useEffect(() => {
     axios.get(oneAssignmentAPI)
         .then(res => setAssignment(res.data[0]))
+        .catch(err => console.log(err))
+    axios.get(gradedAssignmentsAPI)
+        .then(res => setGradedAssignments(res.data.filter(graded => graded.assignmentID === assignment_id)))
         .catch(err => console.log(err))
     listAll(assignmentsRef).then((res) => {
         res.items.forEach((item) => {
@@ -52,6 +80,13 @@ const Assignment = (props) => {
       res.items.forEach((item) => {
         if(item._location.path_ === `submittedAssignments/${assignment_id + userID + assignment_classID + assignment_name}`){
           setSubmittedAssignments((prev) => [...prev, item._location.path_])
+        }
+      })
+    })
+    listAll(gradedAssignmentsRef).then((res) => {
+      res.items.forEach((item) => {
+        if(item._location.path_.includes(assignment_id)){
+          setGradedFromFB((prev) => [...prev, item._location.path_])
         }
       })
     })
@@ -86,15 +121,29 @@ const Assignment = (props) => {
 
   const deleteAssignment = () => {
     const deleteRef = ref(storage, `teacherAssignmentUploads/${assignment.teacherID}${assignment.name}`)
+    // REMOVE ASSIGNMENT FROM TEACHER_ASSIGNMENT_UPLOADS IN FIREBASE
     deleteObject(deleteRef)
       .then(res => 
+      // REMOVE ASSIGNMENT FROM STUDENT_ASSIGNMENT_UPLOADS IN FIREBASE
         submittedAssignments.forEach((firebase_assignment) => {
           const newDeleteRef = ref(storage, firebase_assignment)
           deleteObject(newDeleteRef)
-            .then(res => console.log('Student Assignment Deleted'))
+            .then(res => 
+          // REMOVE GRADED ASSIGNMENT FROM GRADED_ASSIGNMENTS IN FIREBASE
+              gradedFromFB.forEach((gradedFB) => {
+                const gradedDeleteRef = ref(storage, gradedFB)
+                deleteObject(gradedDeleteRef)
+                  .then(res => 
+                    // REMOVE GRADED ASSIGNMENT FROM MONGODB
+                    axios.delete(removeAllGradesForAssignmentAPI)
+                      .then(res => console.log('The job is done'))
+                      .catch(err => console.log(err)))
+              })
+              )
             .catch(err => console.log(err))
     }))
       .then(res => {
+        // REMOVE ASSIGNMENT FROM MONGODB
           removeFromDB()
           navigate('/profile')
         })
@@ -114,7 +163,12 @@ const Assignment = (props) => {
     return <div></div>
   }
 
-  const showComponent = () => {
+  const showComponent = (obj) => {
+    setShowGrading(!showGrading)
+    setForwardAssignment(obj)
+  }
+
+  const closeComponent = () => {
     setShowGrading(!showGrading)
   }
 
@@ -123,11 +177,13 @@ const Assignment = (props) => {
       <Toaster toastOptions={{
         success: {
           style: {
+            textAlign: 'center',
             border: '3px solid #18d55a'
           }
         },
         error: {
           style: {
+            textAlign: 'center',
             border: '3px solid red'
           }
         }
@@ -176,7 +232,7 @@ const Assignment = (props) => {
             <div className="bottom-assignment-table">
                 
                   {
-                  dbUser ?
+                  dbUser && gradedAssignments ?
                   dbUser[0].position === 'Teacher' ?
                   submittedAssignments && submittedAssignments.length === 0 ?
                   loadingMsg() :
@@ -217,8 +273,9 @@ const Assignment = (props) => {
                                                     <a href={downloadUrls.filter(url => url.includes(studentAssignment.studentID))} download={studentAssignment.name}>
                                                         <button className='assignment-download-button'>VIEW</button>
                                                     </a>
-                                                    <button className="assignment-download-button grade-button" onClick={showComponent}>GRADE</button>
-                                                    {showGrading && <Grading studentAssignment={studentAssignment} studentID={studentAssignment.studentID} dbUser={dbUser} showComponent={showComponent}/>}
+                                                    <button className="assignment-download-button grade-button" onClick={() => showComponent(studentAssignment)}>
+                                                      GRADE
+                                                    </button>
                                                   </>
                                                 : null
                                             }
@@ -236,6 +293,7 @@ const Assignment = (props) => {
                 </div>
         </div>
         {submitAssignment && <SubmitAssignment toggleSubmitAssignment={toggleSubmitAssignment} uploadNotification={uploadNotification} myUser={myUser} assignment_id={assignment_id} assignment_name={assignment.name} classID={assignment.classID} dueDate={assignment.dueDate}/>}
+        {showGrading && <Grading removeGradedNotification={removeGradedNotification} freshGradedAssignments={freshGradedAssignments} gradedAssignments={gradedAssignments} addToGraded={addToGraded} gradeNotification={gradeNotification} studentAssignment={forwardAssignment} dbUser={dbUser} showComponent={closeComponent}/>}
     </div>
   )
 }

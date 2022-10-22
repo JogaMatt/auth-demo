@@ -96,11 +96,13 @@ const Profile = (props) => {
       <Toaster toastOptions={{
         success: {
           style: {
+            textAlign: 'center',
             border: '3px solid #18d55a'
           }
         },
         error: {
           style: {
+            textAlign: 'center',
             border: '3px solid red'
           }
         }
@@ -244,7 +246,7 @@ const Profile = (props) => {
                           </div>
                           {
                             submittedAssignments ?
-                            submittedAssignments.includes(`submittedAssignments/${assignment._id + userID + assignment.classID + assignment.name}`) ? <div className="button-desc">*COMPLETE*</div> : console.log(submittedAssignments) : null
+                            submittedAssignments.includes(`submittedAssignments/${assignment._id + userID + assignment.classID + assignment.name}`) ? <div className="button-desc">*COMPLETE*</div> : null : null
                           }
                         </div>
                       </Link>
