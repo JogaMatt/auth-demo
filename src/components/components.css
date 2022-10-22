@@ -590,8 +590,9 @@ input[type="file"]{
     border: none;
     padding: 5px;
     border-radius: 5px;
-    box-shadow: -3px 3px 3px #acaeae;
-    cursor: pointer
+    box-shadow: -2px 2px 2px #acaeae;
+    cursor: pointer;
+    font-weight: 550;
 }
 
 .assignment-table-title-row{
@@ -606,4 +607,10 @@ input[type="file"]{
 
 .assignment-table-head{
     border: 1px solid black;
+}
+
+.grade-button{
+    background-image: linear-gradient(to bottom right, #a8fabb, #28d928, #a8fabb);
+    color: white;
+    font-weight: 550;
 }

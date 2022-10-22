@@ -6,6 +6,7 @@ import {getDownloadURL, listAll, ref, deleteObject} from 'firebase/storage'
 import { SlNotebook } from 'react-icons/sl';
 import SubmitAssignment from './SubmitAssignment';
 import toast, {Toaster} from 'react-hot-toast'
+import Grading from './Grading';
 
 const Assignment = (props) => {
   const {assignment_classID, assignment_id, assignment_name} = useParams()
@@ -23,6 +24,7 @@ const Assignment = (props) => {
   const [assignmentsFromDB, setAssignmentsFromDB] = useState([])
   const submittedAssignmentsFromDB = `${backend}/api/assignment/getAssignmentsForOneClass/${assignment_classID}`
   const [studentDownloadUrls, setStudentDownloadUrls] = useState([])
+  const [showGrading, setShowGrading] = useState(false)
 
   const currentUserAPI = `${backend}/api/user/oneUser/${myUser.sub}`
   const deleteAPI = `${backend}/api/assignment/deleteAssignment/${assignment_id}`
@@ -108,6 +110,14 @@ const Assignment = (props) => {
         .catch(err => console.log(err))
   }
 
+  const loadingMsg = () => {
+    return <div></div>
+  }
+
+  const showComponent = () => {
+    setShowGrading(!showGrading)
+  }
+
   return (
     <div className='profile-page'>
       <Toaster toastOptions={{
@@ -168,6 +178,8 @@ const Assignment = (props) => {
                   {
                   dbUser ?
                   dbUser[0].position === 'Teacher' ?
+                  submittedAssignments && submittedAssignments.length === 0 ?
+                  loadingMsg() :
                   <>
                       <div className="tab-title" style={{width: 'max-content'}}>Submitted Assignments</div>
                       <table className='assignment-table'>
@@ -179,7 +191,7 @@ const Assignment = (props) => {
                                   <th className='assignment-tab-title'>Due Date</th>
                                   <th className='assignment-tab-title'>Date Submitted</th>
                                   <th className='assignment-tab-title'>Status</th>
-                                  <th className='assignment-tab-title'>Download</th>
+                                  <th className='assignment-tab-title'>Actions</th>
                               </tr>
                           </thead>
                           <tbody>
@@ -198,15 +210,20 @@ const Assignment = (props) => {
                                               <td style={{color: '#28d928'}}>On Time</td>
                                               : <td style={{color: 'red'}}>Late</td>
                                           }
-                                          {
-                                              downloadUrls ?
-                                              <td>
-                                                  <a href={downloadUrls.filter(url => url.includes(studentAssignment.studentID))} download={studentAssignment.name}>
-                                                      <button className='assignment-download-button'>View</button>
-                                                  </a>
-                                              </td>
-                                              : null
-                                          }
+                                          <td style={{display: 'flex', justifyContent: 'space-evenly', paddingTop: 6}}>
+                                            {
+                                                downloadUrls ?
+                                                  <>
+                                                    <a href={downloadUrls.filter(url => url.includes(studentAssignment.studentID))} download={studentAssignment.name}>
+                                                        <button className='assignment-download-button'>VIEW</button>
+                                                    </a>
+                                                    <button className="assignment-download-button grade-button" onClick={showComponent}>GRADE</button>
+                                                    {showGrading && <Grading studentAssignment={studentAssignment} studentID={studentAssignment.studentID} dbUser={dbUser} showComponent={showComponent}/>}
+                                                  </>
+                                                : null
+                                            }
+                                            
+                                          </td>
                                       </tr>
                                   })
                                   : null : null
