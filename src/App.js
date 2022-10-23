@@ -31,6 +31,12 @@ function App() {
     })
   }
 
+  const removedSubmissionNotification = () => {
+    toast.success('Your submitted assignment has been removed. Be sure to submit it again!', {
+      duration: 4000
+    })
+  }
+
   return (
     <BrowserRouter>
       {isAuthenticated && <Navbar updateAppUser={updateAppUser} user={user}/>}
@@ -43,7 +49,7 @@ function App() {
             <Route path='/' element={<HomePage updateAppUser={updateAppUser} user={user} currentUser={currentUser}/>}/>
             <Route path='/profile' element={<Profile myUser={user} deleteNotification={deleteNotification}/>}/>
             <Route path='/classes/:classID' element={<Class myUser={user}/>}/>
-            <Route path='/assignment/:assignment_classID/:assignment_id/:assignment_name' element={<Assignment disclaimerNotification={disclaimerNotification} deleteNotification={deleteNotification} myUser={user}/>}/>
+            <Route path='/assignment/:assignment_classID/:assignment_id/:assignment_name' element={<Assignment removedSubmissionNotification={removedSubmissionNotification} disclaimerNotification={disclaimerNotification} deleteNotification={deleteNotification} myUser={user}/>}/>
           </>
         }
       </Routes>

@@ -588,6 +588,7 @@ input[type="file"]{
     color: white;
     font-size: 13pt;
     font-weight: 600;
+    cursor: pointer;
     background-color: #616c70;
 }
 

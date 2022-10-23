@@ -7,10 +7,11 @@ import { SlNotebook } from 'react-icons/sl';
 import SubmitAssignment from './SubmitAssignment';
 import toast, {Toaster} from 'react-hot-toast'
 import Grading from './Grading';
+import Resubmit from './Resubmit';
 
 const Assignment = (props) => {
   const {assignment_classID, assignment_id, assignment_name} = useParams()
-  const {myUser, deleteNotification, disclaimerNotification} = props
+  const {myUser, deleteNotification, disclaimerNotification, removedSubmissionNotification} = props
   const assignmentsRef = ref(storage, "teacherAssignmentUploads/")
   const submittedAssignmentsRef = ref(storage, "submittedAssignments/")
   const [assignment, setAssignment] = useState('')
@@ -29,6 +30,8 @@ const Assignment = (props) => {
   const [gradedAssignments, setGradedAssignments] = useState([])
   const gradedAssignmentsRef = ref(storage, 'gradedAssignments/')
   const [gradedFromFB, setGradedFromFB] = useState([])
+  const [showResubmit, setShowResubmit] = useState(false)
+
 
   const currentUserAPI = `${backend}/api/user/oneUser/${myUser.sub}`
   const deleteAPI = `${backend}/api/assignment/deleteAssignment/${assignment_id}`
@@ -60,6 +63,10 @@ const Assignment = (props) => {
 
   const freshGradedAssignments = (arr) => {
     setGradedAssignments(arr)
+  }
+
+  const freshSubmittedFromFB = (arr) => {
+    setSubmittedAssignments(arr)
   }
 
   useEffect(() => {
@@ -172,6 +179,14 @@ const Assignment = (props) => {
     setShowGrading(!showGrading)
   }
 
+  const resubmit = () => {
+    setShowResubmit(!showResubmit)
+  }
+
+  const closeResubmit = () => {
+    setShowResubmit(!showResubmit)
+  }
+
   return (
     <div className='profile-page'>
       <Toaster toastOptions={{
@@ -223,7 +238,7 @@ const Assignment = (props) => {
                       {
                         !submittedAssignments.includes(`submittedAssignments/${assignment_id + userID + assignment_classID + assignment_name}`) ?
                         <button className="download-button submit-button" onClick={toggleSubmitAssignment}>SUBMIT ASSIGNMENT</button>
-                        : <button className="submitted-button">UPDATE SUBMITTED ASSIGNMENT</button>
+                        : <button className="submitted-button" onClick={resubmit}>UPDATE SUBMITTED ASSIGNMENT</button>
                       }
                     </>
                   : <button className='delete-button' onClick={deleteAssignment}>DELETE ASSIGNMENT</button>
@@ -294,6 +309,7 @@ const Assignment = (props) => {
         </div>
         {submitAssignment && <SubmitAssignment toggleSubmitAssignment={toggleSubmitAssignment} uploadNotification={uploadNotification} myUser={myUser} assignment_id={assignment_id} assignment_name={assignment.name} classID={assignment.classID} dueDate={assignment.dueDate}/>}
         {showGrading && <Grading removeGradedNotification={removeGradedNotification} freshGradedAssignments={freshGradedAssignments} gradedAssignments={gradedAssignments} addToGraded={addToGraded} gradeNotification={gradeNotification} studentAssignment={forwardAssignment} dbUser={dbUser} showComponent={closeComponent}/>}
+        {showResubmit && <Resubmit removedSubmissionNotification={removedSubmissionNotification} freshSubmittedFromFB={freshSubmittedFromFB} assignment_name={assignment.name} classID={assignment.classID} submittedAssignments={submittedAssignments} closeResubmit={closeResubmit} studentID={userID} assignment_id={assignment_id} assignmentsFromDB={assignmentsFromDB}/>}
     </div>
   )
 }

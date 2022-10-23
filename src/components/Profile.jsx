@@ -91,6 +91,12 @@ const Profile = (props) => {
       })
   }, [])
 
+  const removedSubmissionNotification = () => {
+    toast.success('Your submitted assignment has been removed. Be sure to submit it again!', {
+      duration: 4000
+    })
+  }
+
   return (
     <div className='profile-page'>
       <Toaster toastOptions={{
