@@ -22,7 +22,7 @@ const MyGrades = (props) => {
         })
         .catch(err => console.log(err))
     setOnlyMine(myAssignments.filter(potentialAssignment => myClasses.some(s => s.classID === potentialAssignment.classID)))
-  }, [])
+  }, [myAssignments])
 
   return (
     <div className="profile-page">

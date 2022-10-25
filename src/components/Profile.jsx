@@ -29,10 +29,11 @@ const Profile = (props) => {
   const [gradesForm, showGradesForm] = useState(false)
   const [assignmentsForm, showAssignmentsForm] = useState(false)
   const [allAssignments, setAllAssignments] = useState([])
-  const oneUserAPI = `http://localhost:8000/api/user/oneUser/${user.sub}`
-  const myClassesAPI = 'http://localhost:8000/api/class/myClasses/'
-  const allClassesAPI = 'http://localhost:8000/api/class/allClasses/'
-  const allAssignmentsAPI = 'http://localhost:8000/api/assignment/getAssignments'
+  const backend = 'http://localhost:8000'
+  const oneUserAPI = `${backend}/api/user/oneUser/${user.sub}`
+  const myClassesAPI = `${backend}/api/class/myClasses/`
+  const allClassesAPI = `${backend}/api/class/allClasses/`
+  const allAssignmentsAPI = `${backend}/api/assignment/getAssignments`
   const assignmentsRef = ref(storage, "teacherAssignmentUploads/")
   const submittedAssignmentsRef = ref(storage, "submittedAssignments/")
   const [downloadUrls, setDownloadUrls] = useState([])
@@ -78,13 +79,13 @@ const Profile = (props) => {
     axios.get(allClassesAPI)
       .then(res => {
         setStudentClasses(res.data.filter(classroom => classroom.students.some(s => s.studentID === currentStudentID)))
-        classesToPass(res.data.filter(classroom => classroom.students.some(s => s.studentID === currentStudentID)))
+        // classesToPass(res.data.filter(classroom => classroom.students.some(s => s.studentID === currentStudentID)))
       })
       .catch(err => console.log(err))
     axios.get(allAssignmentsAPI)
       .then(res => {
         setMyAssignments(res.data.filter(potentialAssignment => potentialAssignment.teacherID === userID))
-        assignmentsToPass(res.data)
+        // assignmentsToPass(res.data)
         setStudentAssignments(res.data)
       })
       .catch(err => console.log(err))

@@ -19,9 +19,37 @@ function App() {
   const [currentUser, setCurrentUser] = useState('')
   const backend = 'http://localhost:8000'
   const usersAPI = `${backend}/api/user/allUsers`
+  const allClassesAPI = `${backend}/api/class/allClasses/`
+  const allAssignmentsAPI = `${backend}/api/assignment/getAssignments`
 
   const [myAssignments, setMyAssignments] = useState([])
   const [myClasses, setMyClasses] = useState([])
+
+  // TODO: MAKE GET REQUESTS SIMILAR TO THOSE ON PROFILE.JSX THAT WILL PULL IN THE STUDENTS CLASSES AND ASSIGNMENTS
+  // THEN PASS THOSE DOWN TO MYGRADES.JSX
+
+  useEffect(() => {
+    axios.get(usersAPI)
+      .then(res => {
+        setDBUsers(res.data)
+      })
+    // GET REQUEST FOR ALL CLASSES
+    if(isAuthenticated){
+      axios.get(allClassesAPI)
+        .then(res => setMyClasses(res.data.filter(classroom => classroom.students.some(s => s.studentID === user.sub.slice(user.sub.length-10)))))
+    // GET REQUEST FOR ALL ASSIGNMENTS
+      axios.get(allAssignmentsAPI)
+        .then(res => setMyAssignments(res.data))
+    }
+
+    
+  }, [isAuthenticated])
+
+
+
+
+
+
 
   const classesToPass = (arr) => {
     setMyClasses(arr)
@@ -53,12 +81,7 @@ function App() {
     })
   }
 
-  useEffect(() => {
-    axios.get(usersAPI)
-      .then(res => {
-        setDBUsers(res.data)
-      })
-  }, [])
+
 
   return (
     <BrowserRouter>

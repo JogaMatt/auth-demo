@@ -53,7 +53,7 @@ const Class = (props) => {
                         {
                             classAssignments ?
                             classAssignments.map((assignment, i) => {
-                            return <Link to={`/assignment/${assignment.classID}/${assignment._id}/${assignment.name}`} key={i}>
+                            return <Link to={`/assignment/${assignment.teacherID}/${assignment.classID}/${assignment._id}/${assignment.name}`} key={i}>
                                 <div className='create-button'>
                                 <SlNotebook size={50} style={{marginTop: 30, marginBottom: 15}}/>
                                 <div className='button-desc'>
