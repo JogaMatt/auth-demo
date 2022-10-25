@@ -10,15 +10,15 @@ import Grading from './Grading';
 import Resubmit from './Resubmit';
 
 const Assignment = (props) => {
-  const {assignment_classID, assignment_id, assignment_name} = useParams()
-  const {myUser, deleteNotification, disclaimerNotification, removedSubmissionNotification} = props
+  const navigate = useNavigate()
+  const {assignment_teacherID, assignment_classID, assignment_id, assignment_name} = useParams()
+  const {myUser, deleteNotification, disclaimerNotification, removedSubmissionNotification, dbUsers} = props
   const assignmentsRef = ref(storage, "teacherAssignmentUploads/")
   const submittedAssignmentsRef = ref(storage, "submittedAssignments/")
   const [assignment, setAssignment] = useState('')
   const [submitAssignment, showSubmitAssignment] = useState(false)
   const [downloadUrls, setDownloadUrls] = useState([])
   const [submittedAssignments, setSubmittedAssignments] = useState([])
-  const navigate = useNavigate()
   const userID = myUser.sub.slice(myUser.sub.length - 10)
   const backend = 'http://localhost:8000'
   const [dbUser, setDbUser] = useState('')
@@ -31,12 +31,14 @@ const Assignment = (props) => {
   const gradedAssignmentsRef = ref(storage, 'gradedAssignments/')
   const [gradedFromFB, setGradedFromFB] = useState([])
   const [showResubmit, setShowResubmit] = useState(false)
+  const [gradedFromDB, setGradedFromDB] = useState('')
 
 
   const currentUserAPI = `${backend}/api/user/oneUser/${myUser.sub}`
   const deleteAPI = `${backend}/api/assignment/deleteAssignment/${assignment_id}`
   const oneAssignmentAPI = `${backend}/api/assignment/getOneAssignment/${assignment_id}`
   const gradedAssignmentsAPI = `${backend}/api/grade/allGrades`
+  const oneGradedAssignmentFromDB = `${backend}/api/grade/thisAssignment/${assignment_id}`
   const removeAllGradesForAssignmentAPI = `${backend}/api/grade/deleteAllAssignmentsGrades/${assignment_id}`
 
   const uploadNotification = () => {
@@ -70,6 +72,15 @@ const Assignment = (props) => {
   }
 
   useEffect(() => {
+    // console.log(dbUsers.filter(oneUser => oneUser.userID.slice(oneUser.userID.length - 10) === userID)[0].position)
+    if(dbUsers.filter(oneUser => oneUser.userID.slice(oneUser.userID.length - 10) === userID)[0].position === 'Teacher' && userID !== assignment_teacherID){
+      navigate('/profile')
+    }
+    axios.get(oneGradedAssignmentFromDB)
+        .then(res => {
+            setGradedFromDB(res.data.filter(grade => grade.studentID === userID))
+          })
+        .catch(err => console.log(err))
     axios.get(oneAssignmentAPI)
         .then(res => setAssignment(res.data[0]))
         .catch(err => console.log(err))
@@ -238,7 +249,11 @@ const Assignment = (props) => {
                       {
                         !submittedAssignments.includes(`submittedAssignments/${assignment_id + userID + assignment_classID + assignment_name}`) ?
                         <button className="download-button submit-button" onClick={toggleSubmitAssignment}>SUBMIT ASSIGNMENT</button>
+                        : gradedFromDB ? 
+                        gradedFromDB.length === 1 ?
+                        <button className="submitted-button" style={{cursor: 'default'}}>ASSIGNMENT GRADED</button>
                         : <button className="submitted-button" onClick={resubmit}>UPDATE SUBMITTED ASSIGNMENT</button>
+                        : null
                       }
                     </>
                   : <button className='delete-button' onClick={deleteAssignment}>DELETE ASSIGNMENT</button>

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {BrowserRouter, Routes, Route} from 'react-router-dom'
 import {useAuth0} from '@auth0/auth0-react'
 import LandingPage from './components/LandingPage';
@@ -9,11 +9,27 @@ import Profile from './components/Profile';
 import Assignment from './components/Assignment';
 import Class from './components/Class';
 import toast from 'react-hot-toast'
+import axios from 'axios';
+import MyGrades from './components/MyGrades';
 
 
 function App() {
   const {isAuthenticated, isLoading, user} = useAuth0()
-  const [currentUser, setCurrentUser] = useState()
+  const [dbUsers, setDBUsers] = useState('')
+  const [currentUser, setCurrentUser] = useState('')
+  const backend = 'http://localhost:8000'
+  const usersAPI = `${backend}/api/user/allUsers`
+
+  const [myAssignments, setMyAssignments] = useState([])
+  const [myClasses, setMyClasses] = useState([])
+
+  const classesToPass = (arr) => {
+    setMyClasses(arr)
+  }
+
+  const assignmentsToPass = (arr) => {
+    setMyAssignments(arr)
+  }
 
   const updateAppUser = (new_user) => {
     setCurrentUser(new_user)
@@ -37,6 +53,13 @@ function App() {
     })
   }
 
+  useEffect(() => {
+    axios.get(usersAPI)
+      .then(res => {
+        setDBUsers(res.data)
+      })
+  }, [])
+
   return (
     <BrowserRouter>
       {isAuthenticated && <Navbar updateAppUser={updateAppUser} user={user}/>}
@@ -47,9 +70,10 @@ function App() {
         {isAuthenticated &&
           <>
             <Route path='/' element={<HomePage updateAppUser={updateAppUser} user={user} currentUser={currentUser}/>}/>
-            <Route path='/profile' element={<Profile myUser={user} deleteNotification={deleteNotification}/>}/>
+            <Route path='/profile' element={<Profile classesToPass={classesToPass} assignmentsToPass={assignmentsToPass} myUser={user} deleteNotification={deleteNotification}/>}/>
             <Route path='/classes/:classID' element={<Class myUser={user}/>}/>
-            <Route path='/assignment/:assignment_classID/:assignment_id/:assignment_name' element={<Assignment removedSubmissionNotification={removedSubmissionNotification} disclaimerNotification={disclaimerNotification} deleteNotification={deleteNotification} myUser={user}/>}/>
+            <Route path='/assignment/:assignment_teacherID/:assignment_classID/:assignment_id/:assignment_name' element={<Assignment removedSubmissionNotification={removedSubmissionNotification} disclaimerNotification={disclaimerNotification} deleteNotification={deleteNotification} myUser={user} dbUsers={dbUsers}/>}/>
+            <Route path='/myGrades/:userID' element={<MyGrades myClasses={myClasses} myAssignments={myAssignments}/>}/>
           </>
         }
       </Routes>

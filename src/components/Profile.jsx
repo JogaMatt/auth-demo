@@ -15,7 +15,7 @@ import {storage} from '../firebase';
 import {getDownloadURL, listAll, ref} from 'firebase/storage'
 
 const Profile = (props) => {
-  const {myUser, deleteNotification} = props
+  const {myUser, deleteNotification, assignmentsToPass, classesToPass} = props
   const {user} = useAuth0()
   const currentStudentID = myUser.sub.slice(myUser.sub.length - 10)
   const [currentUser, setCurrentUser] = useState('')
@@ -76,11 +76,15 @@ const Profile = (props) => {
       .then(res => setMyClasses(res.data))
       .catch(err => console.log(err))
     axios.get(allClassesAPI)
-      .then(res => setStudentClasses(res.data.filter(classroom => classroom.students.some(s => s.studentID === currentStudentID))))
+      .then(res => {
+        setStudentClasses(res.data.filter(classroom => classroom.students.some(s => s.studentID === currentStudentID)))
+        classesToPass(res.data.filter(classroom => classroom.students.some(s => s.studentID === currentStudentID)))
+      })
       .catch(err => console.log(err))
     axios.get(allAssignmentsAPI)
       .then(res => {
         setMyAssignments(res.data.filter(potentialAssignment => potentialAssignment.teacherID === userID))
+        assignmentsToPass(res.data)
         setStudentAssignments(res.data)
       })
       .catch(err => console.log(err))
@@ -189,14 +193,14 @@ const Profile = (props) => {
               <div className="tab-title">Grades</div>
               <div className="sub-contents">
                 
-                  
+                  <Link to={`/myGrades/${userID}`}>
                     <div className='create-button new-button'>
                       <MdOutlineGrade size={50} style={{marginTop: 30, marginBottom: 15}}/>
                       <div className='button-desc'>
                         My Grades 
                       </div>
                     </div>
-                  
+                  </Link>
                   
               </div>
             </li>
@@ -220,7 +224,7 @@ const Profile = (props) => {
                   {
                     myAssignments ?
                     myAssignments.map((assignment, i) => {
-                      return <Link to={`/assignment/${assignment.classID}/${assignment._id}/${assignment.name}`} key={i}>
+                      return <Link to={`/assignment/${assignment.teacherID}/${assignment.classID}/${assignment._id}/${assignment.name}`} key={i}>
                         <div className='create-button'>
                           <SlNotebook size={50} style={{marginTop: 30, marginBottom: 15}}/>
                           <div className='button-desc'>
@@ -244,7 +248,7 @@ const Profile = (props) => {
                   {
                     studentAssignments ?
                     studentAssignments.filter(potentialAssignment => studentClasses.some(s => s.classID === potentialAssignment.classID)).map((assignment, i) => {
-                      return <Link to={`/assignment/${assignment.classID}/${assignment._id}/${assignment.name}`} key={i}>
+                      return <Link to={`/assignment/${assignment.teacherID}/${assignment.classID}/${assignment._id}/${assignment.name}`} key={i}>
                         <div className='create-button'>
                           <SlNotebook size={50} style={{marginTop: 30, marginBottom: 15}}/>
                           <div className='button-desc'>

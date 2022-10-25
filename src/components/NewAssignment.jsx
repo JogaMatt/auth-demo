@@ -13,6 +13,7 @@ const NewAssignment = (props) => {
   const {postAssignment, myUser, uploadNotification, myClasses, myAssignments, addMyAssignment} = props
   const [fileUpload, setFileUpload] = useState(null)
   const [currentDate, setCurrentDate] = useState('')
+  const [assignmentNames, setAssignmentNames] = useState([])
   const [assignment, setMyAssignment] = useState({
     name: '',
     classID: '',
@@ -22,7 +23,9 @@ const NewAssignment = (props) => {
     description: ''
   })
   const fileSizeLimit = 1000000
-  const postAssignmentAPI = 'http://localhost:8000/api/assignment/post'
+  const backend = 'http://localhost:8000'
+  const postAssignmentAPI = `${backend}/api/assignment/post`
+  const allAssignmentsAPI = `${backend}/api/assignment/getAssignments`
 
   const uploadFile = (e) => {
     e.preventDefault()
@@ -30,6 +33,10 @@ const NewAssignment = (props) => {
       toast.error('No file uploaded', {
         duration: 4000
       })
+    } else if(assignmentNames.includes(assignment.name.substring(12).replace(/\s/g, '_'))){
+        toast.error('Assignment name is already taken. Please try again.', {
+          duration: 4000
+        })
     } else if(assignment.classID === ''){
         toast.error('Please select a class', {
             duration: 4000
@@ -94,6 +101,12 @@ const NewAssignment = (props) => {
   useEffect(() => {
     const currentDate = new Date()
     setCurrentDate(currentDate.toISOString().split('T')[0])
+    axios.get(allAssignmentsAPI)
+      .then(res => {
+        res.data.forEach(assignment => {
+          setAssignmentNames((prev) => [...prev, assignment.name])
+        })
+      })
   }, [])
 
   return (
